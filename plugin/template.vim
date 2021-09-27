@@ -3,13 +3,17 @@ function Template()
     let l:fileName = expand('%:t:r')
     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
     let l:indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
-    if l:fileType == "py"
-        call s:py(fileName, indent)
-    elseif l:fileType == "cpp"
-        call s:cpp(fileName, indent)
-    elseif l:fileType == "html"
-        call s:html(indent)
-    endif
+    let l:langs = {
+                \  'cpp': {a, b -> s:cpp(a, b)},
+                \ 'html': {a, b -> s:html(a, b)},
+                \   'py': {a, b -> s:py(a, b)}
+                \}
+    let l:Func = get(langs, l:fileType, {a, b -> s:dead(a, b)})
+    call Func(l:fileName, l:indent)
+endfunction
+
+function s:dead(fileName, indent)
+    return
 endfunction
 
 function s:cpp(fileName, indent)
@@ -21,7 +25,7 @@ function s:cpp(fileName, indent)
     endif
 endfunction
 
-function s:html(indent)
+function s:html(fileName, indent)
     call setline(1, "<!DOCTYPE html>")
     call append(1, ['<html lang="en">', a:indent . '<head>',
         \repeat(a:indent, 2) . '<meta charset="utf-8">',
