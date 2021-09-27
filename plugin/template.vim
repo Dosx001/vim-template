@@ -1,4 +1,4 @@
-function Template()
+fun! Template()
     let l:fileType = expand('%:e')
     let l:fileName = expand('%:t:r')
     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
@@ -6,26 +6,27 @@ function Template()
     let l:langs = {
                 \  'cpp': {a, b -> s:cpp(a, b)},
                 \ 'html': {a, b -> s:html(a, b)},
-                \   'py': {a, b -> s:py(a, b)}
+                \   'py': {a, b -> s:py(a, b)},
+                \   'sh': {a, b -> s:sh(a, b)}
                 \}
     let l:Func = get(langs, l:fileType, {a, b -> s:dead(a, b)})
     call Func(l:fileName, l:indent)
-endfunction
+endfun
 
-function s:dead(fileName, indent)
+fun! s:dead(fileName, indent)
     return
-endfunction
+endfun
 
-function s:cpp(fileName, indent)
+fun! s:cpp(fileName, indent)
     if a:fileName == "main"
         call append(1, ["", "int main() {", a:indent, a:indent."return 0;", "}"])
     else
         call setline(1, "#include \"" . a:fileName . ".hpp\"")
         call append(1, ["", a:fileName . "::" . a:fileName . "() {", a:indent, "}"])
     endif
-endfunction
+endfun
 
-function s:html(fileName, indent)
+fun! s:html(fileName, indent)
     call setline(1, "<!DOCTYPE html>")
     call append(1, ['<html lang="en">', a:indent . '<head>',
         \repeat(a:indent, 2) . '<meta charset="utf-8">',
@@ -36,9 +37,9 @@ function s:html(fileName, indent)
         \a:indent . '</head>',
         \a:indent . '<body>', repeat(a:indent,2) , a:indent . '</body>', '</html>'
         \])
-endfunction
+endfun
 
-function s:py(fileName, indent)
+fun! s:py(fileName, indent)
     if a:fileName == "main"
         call setline(1, "def main():")
         call append(1, [a:indent."pass", "", "if __name__ == \"__main__\":", a:indent."main()"])
@@ -46,6 +47,10 @@ function s:py(fileName, indent)
         call setline(1, "class " . a:fileName . ":")
         call append(1, [a:indent."def __init__(self):", repeat(a:indent,2) ."pass"])
     endif
-endfunction
+endfun
+
+fun! s:sh(fileName, indent)
+    call append(0, "#!/bin/bash")
+endfun
 
 autocmd BufNewFile * call Template()
