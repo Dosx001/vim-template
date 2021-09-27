@@ -1,3 +1,5 @@
+let g:template_import = get(g:, 'template_import', {})
+
 fun! Template()
     let l:fileType = expand('%:e')
     let l:fileName = expand('%:t:r')
@@ -12,6 +14,16 @@ fun! Template()
                 \}
     let l:Func = get(langs, l:fileType, {a, b -> s:dead(a, b)})
     call Func(l:fileName, l:indent)
+    if has_key(g:template_import, l:fileType)
+        call s:import(g:template_import[l:fileType])
+    endif
+endfun
+
+fun! s:import(list)
+    call append(0, "")
+    for l:i in range(len(a:list) - 1, 0, -1)
+        call append(0, a:list[l:i])
+    endfor
 endfun
 
 fun! s:dead(fileName, indent)
@@ -20,7 +32,8 @@ endfun
 
 fun! s:cpp(fileName, indent)
     if a:fileName == "main"
-        call append(1, ["", "int main() {", a:indent, a:indent."return 0;", "}"])
+        call setline(1, "int main() {")
+        call append(1, [a:indent, a:indent . "return 0;", "}"])
     else
         call setline(1, "#include \"" . a:fileName . ".hpp\"")
         call append(1, ["", a:fileName . "::" . a:fileName . "() {", a:indent, "}"])
