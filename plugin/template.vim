@@ -19,7 +19,16 @@ function Template()
             call append(1, ["", l:fileName . "::" . l:fileName . "() {", indent, "}"])
         endif
     elseif l:fileType == "html"
-        echo "H"
+        call setline(1, "<!DOCTYPE html>")
+        call append(1, ['<html lang="en">', indent . '<head>',
+            \repeat(indent, 2) . '<meta charset="utf-8">',
+            \repeat(indent, 2) . '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">',
+            \repeat(indent, 2) . '<link rel="icon" href="." type="image/svg" sizes="16x16">',
+            \repeat(indent, 2) . '<link rel="stylesheet" type="text/css" href=".">',
+            \repeat(indent, 2) . '<title></title>',
+            \indent . '</head>',
+            \indent . '<body>', repeat(indent,2) , indent . '</body>', '</html>'
+            \])
     endif
 endfunction
 
