@@ -5,6 +5,7 @@ fun! Template()
     let l:indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
     let l:langs = {
                 \  'cpp': {a, b -> s:cpp(a, b)},
+                \  'hpp': {a, b -> s:hpp(a, b)},
                 \ 'html': {a, b -> s:html(a, b)},
                 \   'py': {a, b -> s:py(a, b)},
                 \   'sh': {a, b -> s:sh(a, b)}
@@ -24,6 +25,16 @@ fun! s:cpp(fileName, indent)
         call setline(1, "#include \"" . a:fileName . ".hpp\"")
         call append(1, ["", a:fileName . "::" . a:fileName . "() {", a:indent, "}"])
     endif
+endfun
+
+fun! s:hpp(fileName, indent)
+    call setline(1, "#pragma once")
+    call append(1, ["", "class " . a:fileName . " {", a:indent . "private:",
+                \ repeat(a:indent, 2),
+                \ a:indent . "public:",
+                \ repeat(a:indent, 2),
+                \ "};"
+                \])
 endfun
 
 fun! s:html(fileName, indent)
