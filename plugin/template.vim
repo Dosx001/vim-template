@@ -12,7 +12,12 @@ function Template()
             call append(1, [indent."def __init__(self):", indent.indent."pass"])
         endif
     elseif l:fileType == "cpp"
-        echo "C"
+        if l:fileName == "main"
+            call append(1, ["", "int main() {", indent, indent."return 0;", "}"])
+        else
+            call setline(1, "#include \"" . l:fileName . ".hpp\"")
+            call append(1, ["", l:fileName . "::" . l:fileName . "() {", indent, "}"])
+        endif
     elseif l:fileType == "html"
         echo "H"
     endif
