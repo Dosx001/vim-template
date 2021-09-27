@@ -40,6 +40,7 @@ endfun
 fun! s:html(fileName, indent)
     call setline(1, "<!DOCTYPE html>")
     call append(1, ['<html lang="en">', a:indent . '<head>',
+        \repeat(a:indent, 2) . '<script src="." defer></script>',
         \repeat(a:indent, 2) . '<meta charset="utf-8">',
         \repeat(a:indent, 2) . '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">',
         \repeat(a:indent, 2) . '<link rel="icon" href="." type="image/svg" sizes="16x16">',
