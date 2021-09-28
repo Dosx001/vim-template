@@ -1,4 +1,6 @@
 let g:template_import = get(g:, 'template_import', {})
+let g:template_header = get(g:, 'template_header', 0)
+let g:template_header_list = get(g:, 'template_header_list', [])
 
 fun! s:Template()
     let l:fileType = expand('%:e')
@@ -17,6 +19,9 @@ fun! s:Template()
     if has_key(g:template_import, l:fileType)
         call s:import(g:template_import[l:fileType])
     endif
+    if g:template_header
+        call s:header(l:fileType)
+    endif
 endfun
 
 fun! s:Check()
@@ -29,6 +34,43 @@ fun! s:import(list)
     call append(0, "")
     for l:i in range(len(a:list) - 1, 0, -1)
         call append(0, a:list[l:i])
+    endfor
+endfun
+
+fun! s:header(fileType)
+    let l:types = {
+                \ 'c\|h\|cc\|hh\|cpp\|hpp\|php\|glsl':
+                \ ['/*', '*/'],
+                \ 'htm\|html\|xml':
+                \ ['<!--', '-->'],
+                \ 'el\|emacs':
+                \ [';', ';'],
+                \ 'f90\|f95\|f03\|f\|for':
+                \ ['!', '!'],
+                \ 'js\|ts':
+                \ ['//', '//'],
+                \ 'ml\|mli\|mll\|mly':
+                \ ['(*', '*)'],
+                \ 'tex':
+                \ ['%', '%'],
+                \ 'vim\|\vimrc':
+                \ ['"', '"'],
+                \ }
+    let l:start = '#'
+    let l:end = '#'
+    for type in keys(l:types)
+        if a:fileType =~ type
+            let l:start = l:types[type][0]
+            let l:end = l:types[type][1]
+            break
+        endif
+    endfor
+    let l:spaces = 80
+    for i in range(len(g:template_header_list) - 1, 0, -1)
+        let line = g:template_header_list[i]
+        let l:spaces = l:spaces - len(line)
+        call append(0, l:start . ' ' . line . repeat(' ', l:spaces) . l:end)
+        let l:spaces = 80
     endfor
 endfun
 
