@@ -1,6 +1,6 @@
 let g:template_import = get(g:, 'template_import', {})
 
-fun! Template()
+fun! s:Template()
     let l:fileType = expand('%:e')
     let l:fileName = expand('%:t:r')
     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
@@ -16,6 +16,12 @@ fun! Template()
     call Func(l:fileName, l:indent)
     if has_key(g:template_import, l:fileType)
         call s:import(g:template_import[l:fileType])
+    endif
+endfun
+
+fun! s:Check()
+    if len(readfile(expand('%'), '', 1)) == 0
+        call s:Template()
     endif
 endfun
 
@@ -93,4 +99,5 @@ fun! s:sh(fileName, indent)
     call append(0, "#!/bin/bash")
 endfun
 
-autocmd BufNewFile * call Template()
+autocmd BufNewFile * call s:Template()
+autocmd BufRead * call s:Check()
