@@ -1,6 +1,7 @@
 let g:template_import = get(g:, 'template_import', {})
 let g:template_header = get(g:, 'template_header', 0)
 let g:template_header_list = get(g:, 'template_header_list', [])
+let g:template_date = get(g:, 'template_date', [])
 
 let s:fileType = {
             \  'cpp': {a, b -> s:cpp(a, b)},
@@ -74,6 +75,11 @@ fun! s:header(fileType)
         call append(0, l:start . ' ' . line . repeat(' ', l:spaces) . l:end)
         let l:spaces = 80
     endfor
+    if len(g:template_date) != 0
+        let date = strftime(g:template_date[2])
+        let spaces = spaces - len(date) - len(g:template_date[1]) + 1
+        call append(g:template_date[0] - 1, start . g:template_date[1] . date . repeat(' ', spaces) . end)
+    endif
 endfun
 
 fun! s:dead(fileName, indent)
