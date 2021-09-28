@@ -65,9 +65,24 @@ fun! s:html(fileName, indent)
 endfun
 
 fun! s:py(fileName, indent)
+    let l:file = split(a:fileName, "_")
     if a:fileName == "main"
         call setline(1, "def main():")
         call append(1, [a:indent."pass", "", "if __name__ == \"__main__\":", a:indent."main()"])
+    elseif "test" == l:file[0]
+        call setline(1, "from " . l:file[1] . " import " . l:file[1])
+        call append(1, ["import unittest", ""
+                    \, "class TestList(unittest.TestCase):"
+                    \, a:indent . "def setUp(self):"
+                    \, repeat(a:indent, 2) . "self.cls = " . l:file[1] . "()", ""
+                    \, a:indent . "def tearDown(self):"
+                    \, repeat(a:indent, 2) . "pass", ""
+                    \, a:indent . "def test(self):" , repeat(a:indent , 2) . "pass" , ""
+                    \, a:indent . "def test(self):" , repeat(a:indent , 2) . "pass" , ""
+                    \, a:indent . "def test(self):" , repeat(a:indent , 2) . "pass" , ""
+                    \, 'if __name__ == "__main__":'
+                    \, a:indent . "unittest.main()"
+                    \])
     else
         call setline(1, "class " . a:fileName . ":")
         call append(1, [a:indent."def __init__(self):", repeat(a:indent,2) ."pass"])
