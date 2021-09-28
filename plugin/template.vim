@@ -2,19 +2,39 @@ let g:template_import = get(g:, 'template_import', {})
 let g:template_header = get(g:, 'template_header', 0)
 let g:template_header_list = get(g:, 'template_header_list', [])
 
+let s:fileType = {
+            \  'cpp': {a, b -> s:cpp(a, b)},
+            \  'hpp': {a, b -> s:hpp(a, b)},
+            \ 'html': {a, b -> s:html(a, b)},
+            \   'py': {a, b -> s:py(a, b)},
+            \   'sh': {a, b -> s:sh(a, b)}
+            \}
+
+let s:types = {
+            \ 'c\|h\|cc\|hh\|cpp\|hpp\|php\|glsl':
+                \ ['/*', '*/'],
+            \ 'html\|htm\|xml':
+                \ ["<!--", "-->"],
+            \ 'el\|emacs':
+                \ [';', ';'],
+            \ 'f90\|f95\|f03\|f\|for':
+                \ ['!', '!'],
+            \ 'js\|ts':
+                \ ['//', '//'],
+            \ 'ml\|mli\|mll\|mly':
+                \ ['(*', '*)'],
+            \ 'tex':
+                \ ['%', '%'],
+            \ 'vim\|\vimrc':
+                \ ['"', '"'],
+            \ }
+
 fun! s:Template()
     let l:fileType = expand('%:e')
     let l:fileName = expand('%:t:r')
     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
     let l:indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
-    let l:langs = {
-                \  'cpp': {a, b -> s:cpp(a, b)},
-                \  'hpp': {a, b -> s:hpp(a, b)},
-                \ 'html': {a, b -> s:html(a, b)},
-                \   'py': {a, b -> s:py(a, b)},
-                \   'sh': {a, b -> s:sh(a, b)}
-                \}
-    let l:Func = get(langs, l:fileType, {a, b -> s:dead(a, b)})
+    let l:Func = get(s:fileType, l:fileType, {a, b -> s:dead(a, b)})
     call Func(l:fileName, l:indent)
     if has_key(g:template_import, l:fileType)
         call s:import(g:template_import[l:fileType])
@@ -38,30 +58,12 @@ fun! s:import(list)
 endfun
 
 fun! s:header(fileType)
-    let l:types = {
-                \ 'c\|h\|cc\|hh\|cpp\|hpp\|php\|glsl':
-                \ ['/*', '*/'],
-                \ 'htm\|html\|xml':
-                \ ['<!--', '-->'],
-                \ 'el\|emacs':
-                \ [';', ';'],
-                \ 'f90\|f95\|f03\|f\|for':
-                \ ['!', '!'],
-                \ 'js\|ts':
-                \ ['//', '//'],
-                \ 'ml\|mli\|mll\|mly':
-                \ ['(*', '*)'],
-                \ 'tex':
-                \ ['%', '%'],
-                \ 'vim\|\vimrc':
-                \ ['"', '"'],
-                \ }
     let l:start = '#'
     let l:end = '#'
-    for type in keys(l:types)
+    for type in keys(s:types)
         if a:fileType =~ type
-            let l:start = l:types[type][0]
-            let l:end = l:types[type][1]
+            let l:start = s:types[type][0]
+            let l:end = s:types[type][1]
             break
         endif
     endfor
