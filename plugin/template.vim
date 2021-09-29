@@ -1,6 +1,5 @@
 let g:template_import = get(g:, 'template_import', {})
-let g:template_header = get(g:, 'template_header', 0)
-let g:template_header_list = get(g:, 'template_header_list', [])
+let g:template_header = get(g:, 'template_header', [])
 let g:template_date = get(g:, 'template_date', [])
 
 let s:fileType = {
@@ -43,7 +42,7 @@ fun! s:Template()
     if has_key(g:template_import, fileType)
         call s:import(g:template_import[fileType])
     endif
-    if g:template_header
+    if len(g:template_header) != 0
         call s:header(fileType)
     endif
 endfun
@@ -66,8 +65,8 @@ fun! s:header(fileType)
         if type =~ a:fileType
             let start = s:types[type][0]
             let end = s:types[type][1]
-            for i in range(len(g:template_header_list) - 1, 0, -1)
-                let line = g:template_header_list[i]
+            for i in range(len(g:template_header) - 1, 0, -1)
+                let line = g:template_header[i]
                 let spaces = 80 - len(line)
                 call append(0, start . ' ' . line . repeat(' ', spaces) . end)
             endfor
