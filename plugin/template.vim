@@ -12,7 +12,7 @@ let s:fileType = {
             \}
 
 let s:types = {
-            \ 'c\|h\|cc\|hh\|cpp\|hpp\|php\|glsl':
+            \ 'c\|h\|cc\|hh\|cpp\|hpp\|css\|php\|glsl':
                 \ ['/*', '*/'],
             \ 'html\|htm\|xml':
                 \ ["<!--", "-->"],
@@ -20,10 +20,12 @@ let s:types = {
                 \ [';', ';'],
             \ 'f90\|f95\|f03\|f\|for':
                 \ ['!', '!'],
-            \ 'js\|ts':
+            \ 'cs\|java\|js\|jsx\|ts\|tsx\|scss':
                 \ ['//', '//'],
             \ 'ml\|mli\|mll\|mly':
                 \ ['(*', '*)'],
+            \ 'py':
+                \ ['#', '#'],
             \ 'tex':
                 \ ['%', '%'],
             \ 'vim\|\vimrc':
@@ -31,17 +33,17 @@ let s:types = {
             \ }
 
 fun! s:Template()
-    let l:fileType = expand('%:e')
-    let l:fileName = expand('%:t:r')
+    let fileType = expand('%:e')
+    let fileName = expand('%:t:r')
     let sw = exists('*shiftwidth') ? shiftwidth() : &l:shiftwidth
-    let l:indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
-    let l:Func = get(s:fileType, l:fileType, {a, b -> s:dead(a, b)})
-    call Func(l:fileName, l:indent)
-    if has_key(g:template_import, l:fileType)
-        call s:import(g:template_import[l:fileType])
+    let indent = (&l:expandtab || &l:tabstop !=# sw) ? repeat(' ', sw) : "\t"
+    let Func = get(s:fileType, l:fileType, {a, b -> s:dead(a, b)})
+    call Func(fileName, indent)
+    if has_key(g:template_import, fileType)
+        call s:import(g:template_import[fileType])
     endif
     if g:template_header
-        call s:header(l:fileType)
+        call s:header(fileType)
     endif
 endfun
 
@@ -53,33 +55,29 @@ endfun
 
 fun! s:import(list)
     call append(0, "")
-    for l:i in range(len(a:list) - 1, 0, -1)
-        call append(0, a:list[l:i])
+    for i in range(len(a:list) - 1, 0, -1)
+        call append(0, a:list[i])
     endfor
 endfun
 
 fun! s:header(fileType)
-    let l:start = '#'
-    let l:end = '#'
     for type in keys(s:types)
-        if a:fileType =~ type
-            let l:start = s:types[type][0]
-            let l:end = s:types[type][1]
+        if type =~ a:fileType
+            let start = s:types[type][0]
+            let end = s:types[type][1]
+            for i in range(len(g:template_header_list) - 1, 0, -1)
+                let line = g:template_header_list[i]
+                let spaces = 80 - len(line)
+                call append(0, start . ' ' . line . repeat(' ', spaces) . end)
+            endfor
+            if len(g:template_date) == 3
+                let date = strftime(g:template_date[2])
+                let spaces = 80 - len(date) - len(g:template_date[1]) + 1
+                call append(g:template_date[0] - 1, start . g:template_date[1] . date . repeat(' ', spaces) . end)
+            endif
             break
         endif
     endfor
-    let l:spaces = 80
-    for i in range(len(g:template_header_list) - 1, 0, -1)
-        let line = g:template_header_list[i]
-        let l:spaces = l:spaces - len(line)
-        call append(0, l:start . ' ' . line . repeat(' ', l:spaces) . l:end)
-        let l:spaces = 80
-    endfor
-    if len(g:template_date) != 0
-        let date = strftime(g:template_date[2])
-        let spaces = spaces - len(date) - len(g:template_date[1]) + 1
-        call append(g:template_date[0] - 1, start . g:template_date[1] . date . repeat(' ', spaces) . end)
-    endif
 endfun
 
 fun! s:dead(fileName, indent)
@@ -121,16 +119,16 @@ fun! s:html(fileName, indent)
 endfun
 
 fun! s:py(fileName, indent)
-    let l:file = split(a:fileName, "_")
+    let fileName = split(a:fileName, "_")
     if a:fileName == "main"
         call setline(1, "def main():")
         call append(1, [a:indent."pass", "", "if __name__ == \"__main__\":", a:indent."main()"])
-    elseif "test" == l:file[0]
-        call setline(1, "from " . l:file[1] . " import " . l:file[1])
+    elseif "test" == fileName[0]
+        call setline(1, "from " . fileName[1] . " import " . fileName[1])
         call append(1, ["import unittest", ""
                     \, "class TestList(unittest.TestCase):"
                     \, a:indent . "def setUp(self):"
-                    \, repeat(a:indent, 2) . "self.cls = " . l:file[1] . "()", ""
+                    \, repeat(a:indent, 2) . "self.cls = " . fileName[1] . "()", ""
                     \, a:indent . "def tearDown(self):"
                     \, repeat(a:indent, 2) . "pass", ""
                     \, a:indent . "def test(self):" , repeat(a:indent , 2) . "pass" , ""
