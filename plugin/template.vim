@@ -8,7 +8,8 @@ let s:fileType = {
             \  'hpp': {a, b -> s:hpp(a, b)},
             \ 'html': {a, b -> s:html(a, b)},
             \   'py': {a, b -> s:py(a, b)},
-            \   'sh': {a, b -> s:sh(a, b)}
+            \   'sh': {a, b -> s:sh(a, b)},
+            \  'svg': {a, b -> s:svg(a, b)}
             \}
 
 let s:types = {
@@ -145,6 +146,18 @@ endfun
 
 fun! s:sh(fileName, indent)
     call append(0, "#!/bin/bash")
+endfun
+
+fun! s:svg(fileName, indent)
+    call setline(1, '<svg xmlns="http://www.w3.org/2000/svg" width="" height="" viewBox="">')
+    call append(1, [a:indent . '<defs>',
+                \ repeat(a:indent, 2) . '<style>',
+                \ repeat(a:indent, 3),
+                \ repeat(a:indent, 2) . '</style>',
+                \ a:indent . '<defs>',
+                \ a:indent,
+                \ '<svg>'
+                \])
 endfun
 
 autocmd BufNewFile * call s:Template()
