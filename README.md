@@ -2,7 +2,7 @@
 
 ## Table of Contents
 * [Installation](#installation)
-* [File Extension Supported](#file-extension-supported)
+* [Supported File Types](#supported-file-types)
   * [Where's My Language](#wheres-my-language)
   * [Other Usage Cases](#other-usage-cases)
 * [Tab vs Spaces](#tab-vs-spaces)
@@ -10,9 +10,13 @@
 * [Examples](#examples)
   * [Python Example 1](#python-example-1)
   * [Python Example 2](#python-example-2)
-  * [Python Example 2](#python-example-3)
+  * [Python Example 3](#python-example-3)
   * [HTML Example](#html-example)
-* [Configuration](#configuration)
+* [Configurations](#configurations)
+  * [Automate Imports](#automate-imports)
+  * [Header](#header)
+    * [Supported File Types: Header](#supported-file-types-header)
+  * [Date](#date)
 
 ## Installation
 ### Vundle
@@ -25,12 +29,13 @@ Plugin 'Dosx001/vim-template'
 Plug 'Dosx001/vim-template'
 ```
 
-## File Extension Supported
+## Supported File Types
 
-* .cpp, .hpp
-* .html
-* .py
-* .sh
+* cpp, hpp
+* html
+* py
+* sh
+* svg
 
 ### Where's My Language
 If your favorite language is not here, just create an issue or PR and submit a template. I won't
@@ -39,7 +44,7 @@ template. If there is official documentation for starter code, post it with your
 
 ### Other Usage Cases
 Even if vim-template does not have any of your favorite languages, vim-template still offers great
-vaule for you. Check out [Configuration](#configuration)
+value for you. Check out [Configurations](#configurations)!
 
 ## Tab vs Spaces
 IT DON'T MATTER! vim-template will respect your indentation. Do you have differnt indentation for
@@ -129,7 +134,8 @@ Result
 </html>
 ```
 
-## Configuration
+## Configurations
+### Automate Imports
 vim-template can also automate your imports for example set ```g:template_import``` inside your
 .vimrc as such.
 ```vim
@@ -137,6 +143,18 @@ let g:template_import = {
             \ "py": ["import matplotlib.pyplot as plt", "import numpy as np", "import json"]
             \}
 ```
+```g:template_import``` is a dictionary and each key must be a string. If you want to use
+```g:template_import``` for a specific language you must use the file type of that language.
+| Name | Key |
+| --- | --- |
+|C++ | cpp or hpp|
+|Java | java|
+|JavaScript | js|
+|PHP | php|
+|Python | py|
+|TypeScript | ts|
+
+And the value for each key must be an array of strings.
 ```vim
 vim main.py
 ```
@@ -151,4 +169,59 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+### Header
+If you want vim-template add to add a header set  ```g:template_header```, inside your .vimrc,
+equal to an array of strings.
+```vim
+let g:template_header = [
+            \ "   Name: Andres Rodriguez",
+            \ "Purpose:",
+            \ "  Notes:",
+            \ ""
+            \ ]
+```
+Result
+```python
+#    Name: Andres Rodriguez                                                       #
+# Purpose:                                                                        #
+#   Notes:                                                                        #
+#                                                                                 #
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
+```
+### Supported File Types: Header
+c, cc, cpp, cs, css, el, emacs, f, f03, f90, f95, for, glsl, h, hh, hpp, htm, html,
+java, js, jsx, ml, mli, mll, mly, php, py, scss, tex, ts, tsx, vim, vimrc, xml
+
+Make an issue or PR to add more!
+### Date
+If you want vim-template to add the date inside your header use ```g:template_date```.
+```g:template_date``` is an array. The first value is an integer, set it to which line you want the date
+section to appear on. The second value is a string, set it on how the want the date section to be
+formated. The third and last value is a string, set it on how you want the date to be formated.
+```vim
+let g:template_header = [
+            \ "   Name: Andres Rodriguez",
+            \ "Purpose:",
+            \ "  Notes:",
+            \ ""
+            \ ]
+let g:template_date = [2, "    Date: ", "%Y-%m-%d %H:%M:%S"]
+```
+Result
+```python
+1  #    Name: Andres Rodriguez                                                       #
+2  #    Date: 2021-09-28 19:03:42                                                    #
+3  # Purpose:                                                                        #
+4  #   Notes:                                                                        #
+5  #                                                                                 #
+6  def main():
+7      pass
+8
+9  if __name__ == "__main__":
+10     main()
 ```
