@@ -95,13 +95,15 @@ fun! s:cpp(fileName, indent)
 endfun
 
 fun! s:hpp(fileName, indent)
-    call setline(1, "#pragma once")
-    call append(1, ["", "class " . a:fileName . " {", a:indent . "private:",
-                \ repeat(a:indent, 2),
-                \ a:indent . "public:",
-                \ repeat(a:indent, 2),
-                \ "};"
-                \])
+    call setline(1, ["#pragma once", ""])
+    if a:fileName != "pch"
+        call append(1, ["", "class " . a:fileName . " {", a:indent . "private:",
+                    \ repeat(a:indent, 2),
+                    \ a:indent . "public:",
+                    \ repeat(a:indent, 2),
+                    \ "};"
+                    \])
+    endif
 endfun
 
 fun! s:html(fileName, indent)
