@@ -40,7 +40,7 @@ fun! s:Template()
     let Func = get(s:fileType, l:fileType, {a, b -> s:dead(a, b)})
     call Func(fileName, indent)
     if has_key(g:template_import, fileType)
-        call s:import(g:template_import[fileType])
+        call s:import(fileName, g:template_import[fileType])
     endif
     if len(g:template_header) != 0
         call s:header(fileType)
@@ -53,8 +53,25 @@ fun! s:Check()
     endif
 endfun
 
-fun! s:import(list)
+fun! s:import(fileName, list)
     call append(0, "")
+    if type(a:list) == 3
+        call s:revAppend(a:list)
+    else
+        let key = split(a:fileName, "_")[0]
+        let key = "main\|test\|pch" =~ key ? key : "and"
+        try
+            call s:revAppend(a:list["or"])
+        cat
+        endt
+        try
+            call s:revAppend(a:list[key])
+        cat
+        endt
+    endif
+endfun
+
+fun! s:revAppend(list)
     for i in range(len(a:list) - 1, 0, -1)
         call append(0, a:list[i])
     endfor
@@ -95,9 +112,10 @@ fun! s:cpp(fileName, indent)
 endfun
 
 fun! s:hpp(fileName, indent)
-    call setline(1, ["#pragma once", ""])
     if a:fileName != "pch"
-        call append(1, ["", "class " . a:fileName . " {", a:indent . "private:",
+        call setline(1, "class " . a:fileName . " {")
+        call append(1, [
+                    \ a:indent . "private:",
                     \ repeat(a:indent, 2),
                     \ a:indent . "public:",
                     \ repeat(a:indent, 2),
