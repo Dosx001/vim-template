@@ -32,6 +32,7 @@ Plug 'Dosx001/vim-template'
 
 # Supported File Types
 
+* CMakeLists.txt
 * cpp, hpp
 * html
 * py

@@ -7,6 +7,7 @@ let s:fileType = {
             \  'hpp': {a, b -> s:hpp(a, b)},
             \ 'html': {a, b -> s:html(a, b)},
             \   'py': {a, b -> s:py(a, b)},
+            \  'txt': {a, b -> s:cmake(a, b)},
             \   'sh': {a, b -> s:sh(a, b)},
             \  'svg': {a, b -> s:svg(a, b)}
             \}
@@ -99,6 +100,24 @@ endfun
 
 fun! s:dead(fileName, indent)
     return
+endfun
+
+fun! s:cmake(fileName, indent)
+    if a:fileName == "CMakeLists"
+        let ver = system("cmake --version 2>&1 | head -n 1 | awk '{print $3}'")
+        call setline(1, "cmake_minimum_required(" . ver[0:-2] . " VERSION)")
+        call append(1, ["project(" . expand('%:p:h:t') . " VERSION 1.0.0)", "",
+                    \ 'set(CMAKE_CXX_FLAGS "-O1")', "",
+                    \ 'add_library(',
+                    \ a:indent . 'lib',
+                    \ a:indent . ')',
+                    \ 'target_include_directories(lib PUBLIC include)',  "",
+                    \ 'file(MAKE_DIRECTORY bin)',
+                    \ 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)',
+                    \ 'add_executable(${PROJECT_NAME}.exe src/main.cpp)',
+                    \ 'target_precompile_headers(${PROJECT_NAME}.exe PUBLIC src/pch.hpp)'
+                    \])
+    endif
 endfun
 
 fun! s:cpp(fileName, indent)
