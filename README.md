@@ -35,8 +35,10 @@ Plug 'Dosx001/vim-template'
 * CMakeLists.txt
 * cpp, hpp
 * html
+* js
 * py
 * sh
+* ts
 * svg
 
 ## Where's My Language

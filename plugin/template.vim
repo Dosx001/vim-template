@@ -6,8 +6,10 @@ let s:fileType = {
             \  'cpp': {a, b -> s:cpp(a, b)},
             \  'hpp': {a, b -> s:hpp(a, b)},
             \ 'html': {a, b -> s:html(a, b)},
+            \   'js': {a, b -> s:js(a, b)},
             \   'py': {a, b -> s:py(a, b)},
             \  'txt': {a, b -> s:cmake(a, b)},
+            \   'ts': {a, b -> s:js(a, b)},
             \   'sh': {a, b -> s:sh(a, b)},
             \  'svg': {a, b -> s:svg(a, b)}
             \}
@@ -155,6 +157,28 @@ fun! s:html(fileName, indent)
         \a:indent . '</head>',
         \a:indent . '<body>', repeat(a:indent,2) , a:indent . '</body>', '</html>'
         \])
+endfun
+
+fun! s:js(fileName, indent)
+    echo "vim-template: Web or Node? w/n: "
+    let char = getchar()
+    if char == 119
+        if a:fileName == 'main'
+            call setline(1, "window.onload = () => {")
+            call append(1, [
+                        \ a:indent, "}", "",
+                        \ 'window.matchMedia("").addLister(() => {',
+                        \ a:indent, "}", "",
+                        \ 'document.addEventListener("keydown", e => {',
+                        \ a:indent, '}'
+                        \])
+        endif
+        if expand('%:e') == "js"
+            call append(0, '"use strict";')
+        endif
+    elseif char == 110
+        echo "Sorry there is no template for Node.js. Create an issue or PR and submit one at https://github.com/Dosx001/vim-template"
+    endif
 endfun
 
 fun! s:py(fileName, indent)
