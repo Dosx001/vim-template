@@ -40,6 +40,7 @@ Plug 'Dosx001/vim-template'
 * sh
 * ts
 * svg
+* vim
 
 ## Where's My Language
 If your favorite language is not here, just create an issue or PR and submit a template. I won't

@@ -11,7 +11,8 @@ let s:fileType = {
             \  'txt': {a, b -> s:cmake(a, b)},
             \   'ts': {a, b -> s:js(a, b)},
             \   'sh': {a, b -> s:sh(a, b)},
-            \  'svg': {a, b -> s:svg(a, b)}
+            \  'svg': {a, b -> s:svg(a, b)},
+            \  'vim': {a, b -> s:vim(a, b)}
             \}
 
 let s:types = {
@@ -219,6 +220,15 @@ fun! s:svg(fileName, indent)
                 \ a:indent . '<defs>',
                 \ a:indent,
                 \ '<svg>'
+                \])
+endfun
+
+fun! s:vim(fileName, indent)
+    call setline(1, 'fun! s:' . a:fileName . '()')
+    call append(1, [
+                \ a:indent,
+                \ "endfun", "",
+                \ 'autocmd  * call s:'. a:fileName . '()'
                 \])
 endfun
 
