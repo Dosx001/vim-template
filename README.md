@@ -13,23 +13,24 @@
   * [Python Example 3](#python-example-3)
   * [HTML Example](#html-example)
 * [Configurations](#configurations)
-  * [Automate Imports](#automate-imports)
-  * [Header](#header)
+  * [Automate Imports/Includes](#automate-importsincludes)
+  * [Advance Automate Imports/Includes](#advance-automate-importsincludes)
+  * [Add a Header](#add-a-header)
     * [Supported File Types: Header](#supported-file-types-header)
-  * [Date](#date)
+  * [Add the Date to Header](#add-the-date-to-header)
 
-## Installation
-### Vundle
+# Installation
+## Vundle
 ```vim
 Plugin 'Dosx001/vim-template'
 ```
 
-### vim-plug
+## vim-plug
 ```vim
 Plug 'Dosx001/vim-template'
 ```
 
-## Supported File Types
+# Supported File Types
 
 * cpp, hpp
 * html
@@ -37,29 +38,29 @@ Plug 'Dosx001/vim-template'
 * sh
 * svg
 
-### Where's My Language
+## Where's My Language
 If your favorite language is not here, just create an issue or PR and submit a template. I won't
 automatically accept PRs or resolve issues. I would like see feedback from the community for each
 template. If there is official documentation for starter code, post it with your issue or PR.
 
-### Other Usage Cases
+## Other Usage Cases
 Even if vim-template does not have any of your favorite languages, vim-template still offers great
 value for you. Check out [Configurations](#configurations)!
 
-## Tab vs Spaces
+# Tab vs Spaces
 IT DON'T MATTER! vim-template will respect your indentation. Do you have differnt indentation for
 different file types? IT DON'T MATTER! vim-template will respect them all.
 
-## When does vim-template run?
+# When does vim-template run?
 If the file does not exist vim-template will run. If the file does exist vim-template will quickly
 check if the file is COMPLETELY EMPTY and if true vim-template will run. If the file LOOKS EMPTY
 but vim-template does not run just delete the file and recreate it.
 
 What's an empty file? A file with a size of 0 bytes.
 
-## Examples
+# Examples
 
-### Python Example 1
+## Python Example 1
 ```vim
 vim main.py
 ```
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### Python Example 2
+## Python Example 2
 ```vim
 vim pizza.py
 ```
@@ -83,7 +84,7 @@ class pizza:
         pass
 ```
 
-### Python Example 3
+## Python Example 3
 ```vim
 vim test_rocket.py
 ```
@@ -112,7 +113,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-### HTML Example
+## HTML Example
 ```vim
 vim index.html
 ```
@@ -134,9 +135,9 @@ Result
 </html>
 ```
 
-## Configurations
-### Automate Imports
-vim-template can also automate your imports for example set ```g:template_import``` inside your
+# Configurations
+## Automate Imports/Includes
+vim-template can also automate your imports/includes for example set ```g:template_import``` inside your
 .vimrc as such.
 ```vim
 let g:template_import = {
@@ -170,7 +171,81 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-### Header
+## Advance Automate Imports/Includes
+As demonstrated in [Examples](#examples) vim-template can create different starter code based on
+different conditions but when importing/including vim-template has a lack of discrepancy. This is
+were advance settings come into play. Instead of setting each key to an array of string,
+you can set each key to another dictionary.
+| Key | Description |
+| --- | --- |
+| main | Files named main |
+| test | Files names starting with "test_" |
+| pch | This is a unique key for C++ precompiled header files (More unique keys might be added for different languages) |
+| or | For files that do not meet the previous descriptions |
+| and | Every single file no matter what |
+
+Example
+```vim
+let g:template_import = {
+            \ "cpp": {
+                \ "main" : ['#include "MyClass.hpp"'],
+            \ },
+            \ "hpp": {
+                \ "test": ['#include "MyClass.hpp"'],
+                \ "pch": ['#pragma once', '#include <iostream>', '#include <string>', '#include <vector>'],
+                \ "or": ['#pragma once', '#include "pch.hpp"'],
+                \ "and": ['// I <3 vim-template']
+            \ }
+            \}
+```
+```vim
+vim main.cpp MyClass.hpp test_MyClass.hpp pch.hpp -p
+```
+Results
+
+vim.cpp
+```c++
+#include "MyClass.hpp"
+
+int main() {
+    
+    return 0;
+}
+```
+MyClass.hpp
+```c++
+#pragma once
+#include "pch.hpp"
+// I <3 vim-template
+
+class MyClass {
+    private:
+        
+    public:
+        
+};
+```
+test_MyClass.hpp
+```c++
+#include "MyClass.hpp"
+// I <3 vim-template
+
+class test_MyClass {
+    private:
+        
+    public:
+        
+};
+```
+pch.hpp
+```c++
+#pragma once
+#include <iostream>
+#include <string>
+#include <vector>
+// I <3 vim-template
+```
+## Add a Header
 If you want vim-template add to add a header set  ```g:template_header```, inside your .vimrc,
 equal to an array of strings.
 ```vim
@@ -193,12 +268,12 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-### Supported File Types: Header
+## Supported File Types: Header
 c, cc, cpp, cs, css, el, emacs, f, f03, f90, f95, for, glsl, h, hh, hpp, htm, html,
 java, js, jsx, ml, mli, mll, mly, php, py, scss, tex, ts, tsx, vim, vimrc, xml
 
 Make an issue or PR to add more!
-### Date
+## Add the Date to Header
 If you want vim-template to add the date inside your header use ```g:template_date```.
 ```g:template_date``` is an array. The first value is an integer, set it to which line you want the date
 section to appear on. The second value is a string, set it on how the want the date section to be
@@ -212,6 +287,9 @@ let g:template_header = [
             \ ]
 let g:template_date = [2, "    Date: ", "%Y-%m-%d %H:%M:%S"]
 ```
+If you need help with the date formatting, check out this
+<a href="https://www.journaldev.com/23365/python-string-to-datetime-strptime">link</a>
+
 Result
 ```python
 1  #    Name: Andres Rodriguez                                                       #
