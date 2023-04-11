@@ -187,7 +187,9 @@ endfun
 fun! s:jsx(fileName, indent)
   call setline(1, 'const ' . a:fileName . ' = () => {')
   call append(1, [a:indent . "return (",
-        \ repeat(a:indent, 2),
+        \ repeat(a:indent, 2) . "<>",
+        \ repeat(a:indent, 3),
+        \ repeat(a:indent, 2) . "</>",
         \ a:indent . ')',
         \ '}',
         \ '',
