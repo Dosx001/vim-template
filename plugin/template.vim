@@ -110,7 +110,7 @@ endfun
 fun! s:cmake(fileName, indent)
   if a:fileName == "CMakeLists"
     let ver = system("cmake --version 2>&1 | head -n 1 | awk '{print $3}'")
-    call setline(1, "cmake_minimum_required(VERSION " . ver[0:-2])
+    call setline(1, "cmake_minimum_required(VERSION " . ver[0:-2]. ")")
     call append(1, ["project(" . expand('%:p:h:t') . " VERSION 1.0.0)", "",
           \ 'set(CMAKE_CXX_FLAGS "-O1")', "",
           \ 'add_library(',
